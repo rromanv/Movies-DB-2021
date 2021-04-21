@@ -6,6 +6,7 @@
     </div>
     <p class="text-xl">Mouse is on {{ x }} and {{ y }}</p>
   </div>
+  <Footer />
 </template>
 
 <script setup>
