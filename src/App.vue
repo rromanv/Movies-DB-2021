@@ -1,4 +1,5 @@
 <template>
+  <NavBar />
   <div class="main">
     <div class="title">
       <mdi:controller-classic-outline />
