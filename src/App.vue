@@ -1,19 +1,14 @@
 <template>
   <NavBar />
-  <div class="main">
-    <div class="title">
-      <mdi:controller-classic-outline />
-      <h1 class="">Hello There</h1>
-    </div>
-    <p class="text-xl">Mouse is on {{ x }} and {{ y }}</p>
-  </div>
+  <EmptyHome v-if="!isAuthenticated" />
+  <Home v-else />
   <Footer />
 </template>
 
 <script setup>
-  import { useMouse } from '@vueuse/core'
+  import { authentication } from '~/helpers/useFirebase'
 
-  const { x, y } = useMouse()
+  const { isAuthenticated } = authentication()
 </script>
 
 <style lang="postcss">
