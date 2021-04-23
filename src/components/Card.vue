@@ -15,7 +15,13 @@
           {{ movie.overview }}
         </p>
       </div>
-      <div class="flex items-center justify-end">
+      <div class="flex items-start justify-end">
+        <div class="flex flex-col items-center">
+          <button @click="newLike" class="text-coolGray-400 hover:text-red-600">
+            <mdi:heart class="w-8 h-8" />
+            <span>{{ likes }}</span>
+          </button>
+        </div>
         <div class="flex flex-col items-center">
           <button @click="toggle" class="text-coolGray-400 hover:text-blue-600">
             <mdi:comment class="w-8 h-8" />
@@ -29,13 +35,31 @@
 </template>
 
 <script setup>
-  import { defineProps } from 'vue'
+  import { defineProps, ref, onMounted, watch } from 'vue'
   import { imageBaseURL } from '~/helpers/useMoviesAPI'
-  import { useToggle } from '@vueuse/core'
+  import { countByObjectId, add } from '~/helpers/useLikes'
+  import { toRefs, useToggle } from '@vueuse/core'
+  import { authentication } from '~/helpers/useFirebase'
 
   const [value, toggle] = useToggle(false)
 
-  defineProps({
+  const { user } = authentication()
+
+  const newLike = async () => {
+    await add({ objectId: props.movie.id.toString(), userId: user.value.uid })
+    await getLikes()
+  }
+  onMounted(() => getLikes())
+
+  const likes = ref(0)
+
+  const getLikes = async () => {
+    const response = await countByObjectId(props.movie.id.toString())
+    const { data } = response
+    if (data) likes.value = data.count
+  }
+
+  const props = defineProps({
     movie: {
       type: Object,
       default: () => {
@@ -46,5 +70,9 @@
         }
       },
     },
+  })
+  const { movie } = toRefs(props)
+  watch(movie, () => {
+    getLikes()
   })
 </script>
